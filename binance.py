@@ -118,6 +118,7 @@ def on_open(ws):
                     "batusdt@aggTrade",
                     "btcusdt@markPrice",
                     "batusdt@markPrice",
+                    "adausdt@markPrice",
                     ],
                 "id": 1
                 }

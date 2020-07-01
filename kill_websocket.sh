@@ -6,4 +6,4 @@
 # Created Time: 2020-06-29 03:52:07
 ###################
 
-ps aux | grep -ie python |awk '{print  $2}' |xargs kill -9
+ps aux | grep -ie python | grep -E 'okex|huobi|binance|bitmex' |awk '{print  $2}' |xargs kill -9

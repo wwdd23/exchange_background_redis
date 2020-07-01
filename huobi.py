@@ -32,6 +32,7 @@ def on_message(ws, message):
     msg_dict = json.loads(unzipped_data)
     # print("Recieved Message: ")
     # pprint.pprint(msg_dict)
+    print(msg_dict)
     # write redis
     exchange = "huobi"
     if "tick" in msg_dict:
@@ -40,13 +41,14 @@ def on_message(ws, message):
         #print(re.split('\.',msg_dict["ch"])[1])
         #print( d["price"])
         symbol = re.split('\.',msg_dict["ch"])[1]
+        channel = re.split('\.',msg_dict["ch"])[2]
         attr_dict = {
                 "symbol": symbol,
                 "price": d["price"],
                 "side": d["direction"],
                 "timestamp": info["ts"],
                 }
-        key = exchange + "-" + symbol
+        key = exchange + "-" + channel +  "-" + symbol
         r.hmset(key, attr_dict)
 
     if 'ping' in msg_dict:

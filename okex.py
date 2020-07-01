@@ -26,7 +26,7 @@ r = redis.Redis(connection_pool=pool)
 
 #发送心跳数据
 def sendHeartBeat(ws):
-    ping = '{"event":"ping"}'
+    ping = 'ping'
     while(True):
         time.sleep(30) #每隔30秒交易所服务器发送心跳信息
         sent = False
@@ -36,7 +36,7 @@ def sendHeartBeat(ws):
                 sent = True
                 print("Ping sent.")
             except Exception as e:
-                print(e)
+                print("ping error %s" % e)
 
 #解压函数
 def inflate(data):
@@ -55,9 +55,10 @@ def on_message(ws, message):
     try:
         inflated = inflate(message).decode('utf-8')  #将okex发来的数据>解压
     except Exception as e:
-        print(e)
+        print("try message: %s" % e)
 
-    if inflated == '{"event":"pong"}': 
+    print(inflated)
+    if inflated == 'pong': 
         #判断推送来的消息类型：如果是服 务器的心跳
             print("Pong received.")
             return
@@ -67,7 +68,6 @@ def on_message(ws, message):
             print(msgs)
         elif 'table' in msgs:
             table = msgs["table"]
-            ch = re.split("/",table)[0]
             data = msgs["data"]
             if "trade" in table:
                 data_first = data[0]
@@ -84,30 +84,27 @@ def on_message(ws, message):
                         "side": side,
                         "volume": volume,
                         }
-                key = exchange + "-" + ch + "-" + symbol
+                key = exchange + "-" + table + "-" + symbol
                 r.hmset(key, redis_data)
 
-        elif 'funding' in msgs:
-            table = msgs["table"]
-            ch = re.split("/",table)
-            data = msgs["data"]
-            data_first = data[0]
-            symbol = data_first["instrument_id"]
-            estimated_rate = data_first["estimated_rate"]
-            funding_rate = data_first["funding_rate"]
-            funding_time = data_first["funding_time"]
-            interest_rate = data_first["interest_rate"]
-            settlement_time = data_first["settlement_time"]
-            redis_data = {
-                    "timestamp": funding_time,
-                    "exchange": exchange,
-                    "funding_rate": funding_rate,
-                    "funding_time": funding_time,
-                    "interest_rate": interest_rate,
-                    "settlement_time": settlement_time,
-                    }
-            key = exchange + "-" + ch[0] + "-" + symbol + '-' + ch[1]
-            r.hmset(key, redis_data)
+            elif 'funding' in table:
+                data_first = data[0]
+                symbol = data_first["instrument_id"]
+                estimated_rate = data_first["estimated_rate"]
+                funding_rate = data_first["funding_rate"]
+                funding_time = data_first["funding_time"]
+                interest_rate = data_first["interest_rate"]
+                settlement_time = data_first["settlement_time"]
+                redis_data = {
+                        "timestamp": funding_time,
+                        "exchange": exchange,
+                        "funding_rate": funding_rate,
+                        "funding_time": funding_time,
+                        "interest_rate": interest_rate,
+                        "settlement_time": settlement_time,
+                        }
+                key = exchange + "-" + table + "-" + symbol 
+                r.hmset(key, redis_data)
 
 
     except Exception as e:
@@ -127,7 +124,9 @@ def on_close(ws):
 def on_open(ws):
     def run(*args):
 
-        data = {"op": "subscribe", "args":  ["swap/trade:BTC-USD-SWAP", "swap/funding_rate:BTC-USD-SWAP", "spot/trade:BTC-USDT"]}
+        data = {"op": "subscribe", "args":  ["swap/trade:BTC-USD-SWAP",  "spot/trade:BTC-USDT",
+            "swap/funding_rate:BTC-USD-SWAP", "swap/funding_rate:BTC-USDT-SWAP", "swap/funding_rate:ADA-USD-SWAP", "swap/funding_rate:ADA-USDT-SWAP"]}
+
         send_message(ws, data)
         #ws.close()
         print("thread terminating...")

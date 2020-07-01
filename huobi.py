@@ -37,8 +37,8 @@ def on_message(ws, message):
     if "tick" in msg_dict:
         info = msg_dict["tick"]
         d = info["data"][0]
-        print(re.split('\.',msg_dict["ch"])[1])
-        print( d["price"])
+        #print(re.split('\.',msg_dict["ch"])[1])
+        #print( d["price"])
         symbol = re.split('\.',msg_dict["ch"])[1]
         attr_dict = {
                 "symbol": symbol,

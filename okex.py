@@ -30,8 +30,7 @@ def sendHeartBeat(ws):
     while(True):
         time.sleep(30) #每隔30秒交易所服务器发送心跳信息
         sent = False
-        while(sent is False): #如果发送心跳包时出现错误，则再次发送直到
-            发送成功为止
+        while(sent is False): #如果发送心跳包时出现错误，则再次发送直到 发送成功为止
             try:
                 ws.send(ping)
                 sent = True

@@ -30,8 +30,8 @@ def send_message(ws, message_dict):
 def on_message(ws, message):
     unzipped_data = gzip.decompress(message).decode()
     msg_dict = json.loads(unzipped_data)
-    #print("Recieved Message: ")
-    #pprint.pprint(msg_dict)
+    # print("Recieved Message: ")
+    # pprint.pprint(msg_dict)
     # write redis
     exchange = "huobi"
     if "tick" in msg_dict:
@@ -48,8 +48,6 @@ def on_message(ws, message):
                 }
         key = exchange + "-" + symbol
         r.hmset(key, attr_dict)
-
-        
 
     if 'ping' in msg_dict:
         data = {
@@ -73,7 +71,7 @@ def on_open(ws):
 
         data ={
                 "sub": "market.btcusdt.trade.detail",
-                "id": "id1"
+                "id": "id3"
                 }
         send_message(ws, data)
         #ws.close()
@@ -84,7 +82,7 @@ def on_open(ws):
 
 
 if __name__ == "__main__":
-    # websocket.enableTrace(True)
+    websocket.enableTrace(True)
     ws = websocket.WebSocketApp(
         "wss://api.huobi.pro/ws",
         on_open=on_open,

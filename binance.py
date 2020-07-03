@@ -54,23 +54,28 @@ def send_message(ws, message_dict):
 
 def on_message(ws, message):
     d = json.loads(message)
+    print(d)
     try:
-        if "aggTrade" ==  d["e"]:
-            data = formatTradeData(json.loads(message))
-            symbol = data["symbol"]
-            ch = data["channel"]
-            key = exchange + "-" + ch + "-" + symbol
-            r.hmset(key, data)
+        if isinstance(d, list):
+            for info in d:
+                if "markPriceUpdate" ==  info["e"]:
+                    print(message)
+                    data = formatMarketPrice(info)
+                    print(data)
+                    symbol = data["symbol"]
+                    ch = data["channel"]
+                    # print(message)
+                    key = exchange + "-" + ch + "-" + symbol
+                    r.hmset(key, data)
+        else:
+            if "aggTrade" ==  d["e"]:
+                data = formatTradeData(json.loads(message))
+                symbol = data["symbol"]
+                ch = data["channel"]
+                key = exchange + "-" + ch + "-" + symbol
+                r.hmset(key, data)
 
-        if "markPriceUpdate" ==  d["e"]:
-            print(message)
-            data = formatMarketPrice(json.loads(message))
-            print(data)
-            symbol = data["symbol"]
-            ch = data["channel"]
-            print(message)
-            key = exchange + "-" + ch + "-" + symbol
-            r.hmset(key, data)
+        
 
     except Exception as e:
         print("error: %s" % e)
@@ -114,11 +119,12 @@ def on_open(ws):
                 "method": "SUBSCRIBE",
                 "params":
                 [
-                    "btcusdt@aggTrade",
-                    "batusdt@aggTrade",
-                    "btcusdt@markPrice",
-                    "batusdt@markPrice",
-                    "adausdt@markPrice",
+                    #"btcusdt@aggTrade",
+                    #"batusdt@aggTrade",
+                    #"btcusdt@markPrice",
+                    #"batusdt@markPrice",
+                    #"adausdt@markPrice",
+                    "!markPrice@arr",
                     ],
                 "id": 1
                 }

@@ -67,6 +67,7 @@ def on_message(ws, message):
         if 'event' in msgs: #判断推送来的消息类型：>如果是订阅成功信息
             print(msgs)
         elif 'table' in msgs:
+            print(msgs)
             table = msgs["table"]
             data = msgs["data"]
             if "trade" in table:
@@ -130,6 +131,7 @@ def on_open(ws):
         sub_funding_list =  ["swap/funding_rate:NEO-USDT-SWAP", "swap/funding_rate:LINK-USDT-SWAP", "swap/funding_rate:DASH-USDT-SWAP", "swap/funding_rate:ADA-USDT-SWAP", "swap/funding_rate:ZEC-USDT-SWAP", "swap/funding_rate:XTZ-USDT-SWAP", "swap/funding_rate:ONT-USDT-SWAP", "swap/funding_rate:ATOM-USDT-SWAP", "swap/funding_rate:QTUM-USDT-SWAP", "swap/funding_rate:XLM-USDT-SWAP", "swap/funding_rate:XMR-USDT-SWAP", "swap/funding_rate:IOTA-USDT-SWAP", "swap/funding_rate:ALGO-USDT-SWAP", "swap/funding_rate:IOST-USDT-SWAP", "swap/funding_rate:THETA-USDT-SWAP", "swap/funding_rate:KNC-USDT-SWAP", "swap/funding_rate:COMP-USDT-SWAP", "swap/funding_rate:NEO-USD-SWAP", "swap/funding_rate:LINK-USD-SWAP", "swap/funding_rate:DASH-USD-SWAP", "swap/funding_rate:ADA-USD-SWAP", "swap/funding_rate:ZEC-USD-SWAP", "swap/funding_rate:XTZ-USD-SWAP", "swap/funding_rate:ONT-USD-SWAP", "swap/funding_rate:ATOM-USD-SWAP", "swap/funding_rate:QTUM-USD-SWAP", "swap/funding_rate:XLM-USD-SWAP", "swap/funding_rate:XMR-USD-SWAP", "swap/funding_rate:IOTA-USD-SWAP", "swap/funding_rate:ALGO-USD-SWAP", "swap/funding_rate:IOST-USD-SWAP", "swap/funding_rate:THETA-USD-SWAP", "swap/funding_rate:KNC-USD-SWAP", "swap/funding_rate:BTC-USDT-SWAP", "swap/funding_rate:LTC-USDT-SWAP", "swap/funding_rate:ETH-USDT-SWAP", "swap/funding_rate:TRX-USDT-SWAP", "swap/funding_rate:BCH-USDT-SWAP", "swap/funding_rate:BSV-USDT-SWAP", "swap/funding_rate:EOS-USDT-SWAP", "swap/funding_rate:XRP-USDT-SWAP", "swap/funding_rate:ETC-USDT-SWAP", "swap/funding_rate:BTC-USD-SWAP", "swap/funding_rate:LTC-USD-SWAP", "swap/funding_rate:ETH-USD-SWAP", "swap/funding_rate:TRX-USD-SWAP", "swap/funding_rate:BCH-USD-SWAP", "swap/funding_rate:BSV-USD-SWAP", "swap/funding_rate:EOS-USD-SWAP", "swap/funding_rate:XRP-USD-SWAP", "swap/funding_rate:ETC-USD-SWAP"]
 
 
+        print(base_sub_list + sub_funding_list)
         data = {"op": "subscribe", "args": (base_sub_list + sub_funding_list)} 
 
         send_message(ws, data)

@@ -54,14 +54,13 @@ def send_message(ws, message_dict):
 
 def on_message(ws, message):
     d = json.loads(message)
-    print(d)
     try:
         if isinstance(d, list):
             for info in d:
                 if "markPriceUpdate" ==  info["e"]:
-                    print(message)
+                    #print(message)
                     data = formatMarketPrice(info)
-                    print(data)
+                    #print(data)
                     symbol = data["symbol"]
                     ch = data["channel"]
                     # print(message)
@@ -119,11 +118,9 @@ def on_open(ws):
                 "method": "SUBSCRIBE",
                 "params":
                 [
-                    #"btcusdt@aggTrade",
-                    #"batusdt@aggTrade",
-                    #"btcusdt@markPrice",
-                    #"batusdt@markPrice",
-                    #"adausdt@markPrice",
+                    "btcusdt@aggTrade",
+                    "batusdt@aggTrade",
+                    "adausdt@aggTrade",
                     "!markPrice@arr",
                     ],
                 "id": 1

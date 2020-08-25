@@ -19,6 +19,7 @@ ps aux | grep -ie python | grep -E 'okex|huobi|binance|bitmex' |awk '{print  $2}
 
 echo "restart ws python script"
 python3 binance.py > /dev/null 2>&1 &
+python3 binance-d.py > /dev/null 2>&1 &
 python3 okex.py > /dev/null 2>&1 &
 python3 bitmex.py > /dev/null 2>&1 &
 python3 huobi.py > /dev/null 2>&1 &

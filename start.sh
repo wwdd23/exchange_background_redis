@@ -7,6 +7,7 @@
 ###################
 
 python3 binance.py > /dev/null 2>&1 &
+python3 binance-d.py > /dev/null 2>&1 &
 python3 okex.py > /dev/null 2>&1 &
 python3 bitmex.py > /dev/null 2>&1 &
 python3 huobi.py > /dev/null 2>&1 &

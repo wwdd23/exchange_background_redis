@@ -14,6 +14,7 @@ ps aux | grep -ie python | grep -E 'okex|huobi|binance|bitmex'
 
 echo "git pull start..."
 
+cd $file_path
 git pull;
 
 

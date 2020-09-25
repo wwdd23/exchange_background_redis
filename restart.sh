@@ -8,14 +8,15 @@
 
 
 file_path=`dirname $0`
+pwd
 echo $file_path
 echo "show pid:"
 ps aux | grep -ie python | grep -E 'okex|huobi|binance|bitmex' 
 
 echo "git pull start..."
+cd $file_path && git pull;
+pwd
 
-cd $file_path
-git pull;
 
 
 echo "kill ws pid"

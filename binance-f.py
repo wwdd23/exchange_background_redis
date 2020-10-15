@@ -57,8 +57,16 @@ def on_message(ws, message):
     try:
         if isinstance(d, list):
             for info in d:
-
-                if "24hrMiniTicker" ==  info["e"]:
+                if "markPriceUpdate" ==  info["e"]:
+                    #print(message)
+                    data = formatMarketPrice(info)
+                    #print(data)
+                    symbol = data["symbol"]
+                    ch = data["channel"]
+                    # print(message)
+                    key = exchange + "-" + ch + "-" + symbol
+                    r.hmset(key, data)
+                elif "24hrMiniTicker" ==  info["e"]:
                     #print(message)
                     data = formatTicker(info)
                     #print(data)
@@ -126,6 +134,7 @@ def on_open(ws):
                 "method": "SUBSCRIBE",
                 "params":
                 [
+                    "!markPrice@arr",
                     "!miniTicker@arr",
                     ],
                 "id": 1
@@ -140,10 +149,10 @@ def on_open(ws):
 
 if __name__ == "__main__":
     # websocket.enableTrace(True)
-    exchange = "binance"
+    exchange = "binancef"
     ws = websocket.WebSocketApp(
         #'wss://fstream.binance.com:9443/ws',
-        'wss://stream.binance.com/ws',
+        'wss://fstream.binance.com/ws',
         on_open=on_open,
         on_message=on_message,
         on_error=on_error,

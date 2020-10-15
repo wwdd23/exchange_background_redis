@@ -66,6 +66,15 @@ def on_message(ws, message):
                     # print(message)
                     key = exchange + "-" + ch + "-" + symbol
                     r.hmset(key, data)
+                elif "24hrMiniTicker" ==  info["e"]:
+                    #print(message)
+                    data = formatTicker(info)
+                    #print(data)
+                    symbol = data["symbol"]
+                    ch = data["channel"]
+                    # print(message)
+                    key = exchange + "-" + ch + "-" + symbol
+                    r.hmset(key, data)
         else:
             if "aggTrade" ==  d["e"]:
                 data = formatTradeData(json.loads(message))
@@ -99,6 +108,13 @@ def formatMarketPrice(trade):
             "symbol": trade['s']
             }
 
+def formatTicker(trade):
+    return {
+            "channel": trade['e'],
+            "timestamp": trade['E'],
+            "price": trade['c'], # 最新成交价格
+            "symbol": trade['s']
+            }
 
 
 def on_error(ws, error):
@@ -119,6 +135,7 @@ def on_open(ws):
                 "params":
                 [
                     "!markPrice@arr",
+                    "!miniTicker@arr",
                     ],
                 "id": 1
                 }
@@ -132,7 +149,7 @@ def on_open(ws):
 
 if __name__ == "__main__":
     # websocket.enableTrace(True)
-    exchange = "binancef"
+    exchange = "binanced"
     ws = websocket.WebSocketApp(
         #'wss://fstream.binance.com:9443/ws',
         'wss://dstream.binance.com/ws',

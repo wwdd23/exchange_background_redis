@@ -11,6 +11,7 @@ import gzip
 import json
 import pprint
 import zlib    #压缩相关的库
+import requests
 import hashlib
 import threading
 import re
@@ -76,7 +77,10 @@ def on_message(ws, message):
                 price = data_first["price"]
                 side = data_first["side"]
                 time = data_first["timestamp"]
-                volume = data_first["size"]
+                if "swap" in table:
+                    volume = data_first["size"] 
+                else:
+                    volume = data_first["qty"]
                 redis_data = {
                         "timestamp": time,
                         "exchange": exchange,
@@ -122,17 +126,49 @@ def on_error(ws, error):
 def on_close(ws):
     print("### closed ###")
 
+def get_ws_list():
+
+    host = "https://www.okex.com"
+    spot_path = "/api/spot/v3/instruments"
+    swap_path = "/api/swap/v3/instruments"
+    futures_path = "/api/futures/v3/instruments"
+    
+    spot_url = host + spot_path
+    spot_res = requests.get(spot_url)
+    spot_data = json.loads(spot_res.text)
+    
+    swap_url = host + swap_path
+    swap_res = requests.get(swap_url)
+    swap_data = json.loads(swap_res.text)
+    
+    futures_url = host + futures_path
+    futures_res = requests.get(futures_url)
+    futures_data = json.loads(futures_res.text)
+    spot_trade = []
+    swap_trade = []
+    futures_trade = []
+    funding_list = []
+    # 获取spot trade list
+    for i in spot_data:
+        spot_trade.append( ("spot/trade:" + i["instrument_id"]))
+    # 获取swap trade list
+    for i in swap_data:
+        swap_trade.append( ("swap/trade:" + i["instrument_id"]))
+    for i in futures_data:
+        futures_trade.append( ("futures/trade:" + i["instrument_id"]))
+    for i in swap_data:
+        funding_list.append( ("swap/funding_rate:" + i["instrument_id"]))
+
+    return (spot_trade + swap_trade + futures_trade +  funding_list)
 
 def on_open(ws):
     def run(*args):
 
 
-        base_sub_list =  ["swap/trade:BTC-USD-SWAP",  "spot/trade:BTC-USDT"]
-        sub_funding_list =  ["swap/funding_rate:NEO-USDT-SWAP", "swap/funding_rate:LINK-USDT-SWAP", "swap/funding_rate:DASH-USDT-SWAP", "swap/funding_rate:ADA-USDT-SWAP", "swap/funding_rate:ZEC-USDT-SWAP", "swap/funding_rate:XTZ-USDT-SWAP", "swap/funding_rate:ONT-USDT-SWAP", "swap/funding_rate:ATOM-USDT-SWAP", "swap/funding_rate:QTUM-USDT-SWAP", "swap/funding_rate:XLM-USDT-SWAP", "swap/funding_rate:XMR-USDT-SWAP", "swap/funding_rate:IOTA-USDT-SWAP", "swap/funding_rate:ALGO-USDT-SWAP", "swap/funding_rate:IOST-USDT-SWAP", "swap/funding_rate:THETA-USDT-SWAP", "swap/funding_rate:KNC-USDT-SWAP", "swap/funding_rate:COMP-USDT-SWAP", "swap/funding_rate:NEO-USD-SWAP", "swap/funding_rate:LINK-USD-SWAP", "swap/funding_rate:DASH-USD-SWAP", "swap/funding_rate:ADA-USD-SWAP", "swap/funding_rate:ZEC-USD-SWAP", "swap/funding_rate:XTZ-USD-SWAP", "swap/funding_rate:ONT-USD-SWAP", "swap/funding_rate:ATOM-USD-SWAP", "swap/funding_rate:QTUM-USD-SWAP", "swap/funding_rate:XLM-USD-SWAP", "swap/funding_rate:XMR-USD-SWAP", "swap/funding_rate:IOTA-USD-SWAP", "swap/funding_rate:ALGO-USD-SWAP", "swap/funding_rate:IOST-USD-SWAP", "swap/funding_rate:THETA-USD-SWAP", "swap/funding_rate:KNC-USD-SWAP", "swap/funding_rate:BTC-USDT-SWAP", "swap/funding_rate:LTC-USDT-SWAP", "swap/funding_rate:ETH-USDT-SWAP", "swap/funding_rate:TRX-USDT-SWAP", "swap/funding_rate:BCH-USDT-SWAP", "swap/funding_rate:BSV-USDT-SWAP", "swap/funding_rate:EOS-USDT-SWAP", "swap/funding_rate:XRP-USDT-SWAP", "swap/funding_rate:ETC-USDT-SWAP", "swap/funding_rate:BTC-USD-SWAP", "swap/funding_rate:LTC-USD-SWAP", "swap/funding_rate:ETH-USD-SWAP", "swap/funding_rate:TRX-USD-SWAP", "swap/funding_rate:BCH-USD-SWAP", "swap/funding_rate:BSV-USD-SWAP", "swap/funding_rate:EOS-USD-SWAP", "swap/funding_rate:XRP-USD-SWAP", "swap/funding_rate:ETC-USD-SWAP"]
+        sub_list = get_ws_list()
 
-
-        print(base_sub_list + sub_funding_list)
-        data = {"op": "subscribe", "args": (base_sub_list + sub_funding_list)} 
+        print(sub_list)
+        data = {"op": "subscribe", "args": sub_list} 
 
         send_message(ws, data)
         #ws.close()

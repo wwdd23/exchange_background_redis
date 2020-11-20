@@ -54,6 +54,7 @@ def send_message(ws, message_dict):
 
 def on_message(ws, message):
     d = json.loads(message)
+    print(d)
     try:
         if isinstance(d, list):
             for info in d:
@@ -127,6 +128,7 @@ def on_open(ws):
                 "params":
                 [
                     "!miniTicker@arr",
+                    #"filusdt@ticker",
                     ],
                 "id": 1
                 }

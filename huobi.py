@@ -72,7 +72,7 @@ def on_open(ws):
     def run(*args):
 
         data ={
-                "sub": "market.btcusdt.trade.detail",
+                "sub": "market.filusdt.trade.detail",
                 "id": "id3"
                 }
         send_message(ws, data)

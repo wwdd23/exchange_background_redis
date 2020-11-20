@@ -169,6 +169,7 @@ def on_open(ws):
 
         print(sub_list)
         data = {"op": "subscribe", "args": sub_list} 
+        #data = {"op": "subscribe", "args": ['spot/trade:FIL-USDT']} 
 
         send_message(ws, data)
         #ws.close()
